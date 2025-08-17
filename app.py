@@ -21,9 +21,11 @@ def playlist():
     songs = get_song_list()
     return render_template('playlist.html', songs=songs)
 
-@app.route('/songs/<path:filename>')
+
+@app.route('/songs/<filename>')
 def serve_song(filename):
-    return send_from_directory(SONG_FOLDER, filename)
+    return send_from_directory('static/songs', filename, as_attachment=False)
+
 
 @app.route("/gallery")
 def gallery():
