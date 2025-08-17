@@ -1,0 +1,209 @@
+body {
+    font-family: 'Segoe UI', sans-serif;
+    background: linear-gradient(135deg, #ffb6c1, #ffe4e1);
+    margin: 0;
+    padding: 0;
+    height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+}
+
+/* Heading Gradient */
+h1 {
+    background: linear-gradient(to right, #ff4da6, #ff99cc);
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+    font-size: 2.5rem;
+}
+
+/* Container Animation */
+.container {
+    animation: fadeIn 2s ease-in-out;
+}
+
+.animated-text {
+    font-size: 3em;
+    color: #ff1493;
+    animation: bounce 1.5s infinite alternate;
+}
+
+.subtext {
+    font-size: 1.3em;
+    color: #8b008b;
+    margin-top: 10px;
+    animation: fadeIn 3s ease-in;
+}
+
+/* Start Button */
+.start-btn {
+    display: inline-block;
+    margin-top: 30px;
+    padding: 12px 28px;
+    font-size: 1.2em;
+    color: white;
+    background: #ff69b4;
+    border: none;
+    border-radius: 25px;
+    text-decoration: none;
+    transition: all 0.3s ease;
+    box-shadow: 0 8px 20px rgba(255, 105, 180, 0.3);
+}
+
+.start-btn:hover {
+    background: #ff1493;
+    transform: scale(1.1);
+}
+
+/* Countdown */
+.countdown-text {
+    font-size: 2.5em;
+    color: #ff1493;
+    animation: pop 1s infinite;
+}
+
+/* Heart Button */
+/* Heart Button */
+.heart-btn {
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
+    font-size: 40px; /* bigger by default */
+    cursor: pointer;
+    color: crimson;
+    background: none;
+    border: none;
+    outline: none;
+    transition: transform 0.3s ease;
+}
+
+.heart-btn:hover {
+    transform: scale(1.3);
+}
+
+/* Responsive tweaks */
+@media (max-width: 768px) {
+    h1 {
+        font-size: 2.2rem;
+    }
+    .start-btn {
+        font-size: 1em;
+        padding: 10px 22px;
+    }
+    .heart-btn {
+        font-size: 50px;   /* make it larger for touch screens */
+        bottom: 15px;
+        right: 15px;
+    }
+}
+
+@media (max-width: 480px) {
+    h1 {
+        font-size: 1.8rem;
+    }
+    .start-btn {
+        font-size: 0.9em;
+        padding: 8px 18px;
+    }
+    .heart-btn {
+        font-size: 60px;   /* even larger on small phones */
+        bottom: 10px;
+        right: 10px;
+    }
+}
+
+/* Love Message Box */
+.love-message {
+    position: fixed;
+    bottom: 70px;
+    right: 20px;
+    background: white;
+    color: #ff4081;
+    padding: 10px 15px;
+    border-radius: 12px;
+    box-shadow: 0px 4px 12px rgba(0, 0, 0, 0.15);
+    display: none;
+    animation: fadeIn 0.3s ease;
+}
+
+/* Animations */
+@keyframes bounce {
+    0%   { transform: translateY(0); }
+    100% { transform: translateY(-15px); }
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; }
+    to   { opacity: 1; }
+}
+
+@keyframes pop {
+    0% { transform: scale(1); }
+    50% { transform: scale(1.3); }
+    100% { transform: scale(1); }
+}
+
+
+@keyframes pulseGlow {
+    0% { box-shadow: 0 0 10px rgba(255, 20, 147, 0.6); }
+    50% { box-shadow: 0 0 25px rgba(255, 20, 147, 1); }
+    100% { box-shadow: 0 0 10px rgba(255, 20, 147, 0.6); }
+}
+
+
+@keyframes floatEmoji {
+    from { transform: translateY(0); }
+    to { transform: translateY(-5px); }
+}
+body::before {
+    content: "❤️ 💕 💖 💓 💞";
+    position: fixed;
+    top: -100px;
+    left: 0;
+    width: 100%;
+    font-size: 2rem;
+    animation: fallHearts 10s linear infinite;
+    opacity: 0.3;
+    pointer-events: none;
+}
+
+@keyframes fallHearts {
+    0% { transform: translateY(-100px) translateX(0); }
+    100% { transform: translateY(110vh) translateX(30px); }
+}
+h1 {
+    font-size: 3rem;
+    background: linear-gradient(to right, #ff4d88, #ff99cc);
+    -webkit-background-clip: text;  /* For Chrome/Safari */
+    background-clip: text;          /* Standard */
+    -webkit-text-fill-color: transparent;
+    animation: shine 3s linear infinite;
+}
+
+@keyframes shine {
+    to { background-position: 200% center; }
+}
+.start-btn {
+    display: inline-block;
+    margin: 20px auto;
+    padding: 12px 28px;
+    font-size: 1.2em;
+    background: linear-gradient(135deg, #ff4d88, #ff1493);
+    border: none;
+    border-radius: 25px;
+    transition: all 0.3s ease;
+    box-shadow: 0 8px 20px rgba(255, 105, 180, 0.4);
+    animation: pulseGlow 2s infinite;
+    .start-btn {
+    color: white !important;
+    text-decoration: none !important;
+}
+
+}
+
+.start-btn:hover {
+    transform: scale(1.1) rotate(-2deg);
+    background: linear-gradient(135deg, #ff1493, #ff4d88);
+}

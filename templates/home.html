@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Welcome 💖</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <style>
+        .hidden {
+            display: none;
+        }
+        .password-box {
+            text-align: center;
+            margin-top: 50px;
+        }
+        .password-input {
+            padding: 10px;
+            font-size: 16px;
+        }
+        .password-btn {
+            padding: 10px 20px;
+            margin-left: 10px;
+            font-size: 10px;
+            cursor: pointer;
+            background: pink;
+            border: none;
+            border-radius: 8px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container" id="main-content">
+        <h1 class="animated-text">Hey Masala Soda 💖</h1>
+        <p class="subtext">I made this little something... just for you 💫</p>
+
+        <!-- Password Box -->
+        <div class="password-box" id="passwordBox">
+            <input type="password" id="passwordInput" class="password-input" placeholder="your secret name only i know 💌">
+            <button class="password-btn" onclick="checkPassword()">Unlock</button>
+        </div>
+
+        <!-- Hidden content -->
+        <div id="secretContent" class="hidden">
+            <a href="/playlist" class="start-btn" onclick="startCountdown()">Playlist 🎶</a>
+            <a href="/gallery" class="start-btn">Gallery 📸</a>
+        </div>
+    </div>
+
+    <div id="countdown-box" style="display: none; text-align: center;">
+        <h2 class="countdown-text">Loading Surprise in <span id="countdown">3</span>...</h2>
+    </div>
+
+    <!-- Heart button -->
+    <button class="heart-btn" onclick="showLoveNote()">❤️</button>
+
+    <!-- Message -->
+    <div class="love-message" id="loveMessage"></div>
+
+<script>
+    function checkPassword() {
+        const input = document.getElementById("passwordInput").value;
+        const correctPassword = "masalasoda"; // change this to your secret password
+
+        if (input === correctPassword) {
+            document.getElementById("secretContent").classList.remove("hidden");
+            document.getElementById("passwordBox").style.display = "none";
+        } else {
+            alert("Oops! Wrong password💔 beta theek theek dalo");
+        }
+    }
+</script>
+
+<script src="{{ url_for('static', filename='script.js') }}"></script>
+</body>
+</html>
