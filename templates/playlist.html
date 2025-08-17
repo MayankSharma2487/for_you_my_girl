@@ -35,17 +35,41 @@
     .like{width:40px; height:36px;border-radius:10px;border:0;background:transparent;cursor:pointer;font-size:18px;color:var(--muted)}
     .download{font-size:16px;color:var(--muted);text-decoration:none;padding:6px 8px;border-radius:8px}
 
-    /* mini player */
-    .mini-player{position:fixed;left:50%;transform:translateX(-50%);bottom:14px;width:calc(100% - 28px);max-width:920px;background:linear-gradient(180deg, rgba(255,255,255,0.95), rgba(255,255,255,0.98));backdrop-filter: blur(6px);border-radius:14px;box-shadow:0 12px 32px rgba(0,0,0,.12);display:flex;align-items:center;gap:12px;padding:10px 12px;z-index:1200;}
+    /* mini player - new layout */
+    .mini-player{
+      position:fixed;
+      left:50%;
+      transform:translateX(-50%);
+      bottom:14px;
+      width:calc(100% - 28px);
+      max-width:920px;
+      background:linear-gradient(180deg, rgba(255,255,255,0.95), rgba(255,255,255,0.98));
+      backdrop-filter: blur(6px);
+      border-radius:14px;
+      box-shadow:0 12px 32px rgba(0,0,0,.12);
+      display:flex;
+      flex-direction:row;
+      align-items:center;
+      gap:12px;
+      padding:10px 12px;
+      z-index:1200;
+    }
+
+    /* left block: thumb + meta (moved to bottom on small view) */
     .mini-left{display:flex;align-items:center;gap:10px;min-width:0}
     .mini-thumb{width:56px;height:56px;border-radius:10px;background:#fff;display:grid;place-items:center}
     .mini-meta{min-width:0}
     .mini-title{font-weight:600;font-size:0.95rem;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
     .mini-sub{font-size:0.85rem;color:var(--muted)}
-    .mini-controls{display:flex;align-items:center;gap:8px;margin-left:auto}
+
+    /* controls block */
+    .mini-controls-wrap{display:flex;flex-direction:column;flex:1;gap:6px}
+    .mini-controls{display:flex;align-items:center;gap:8px;justify-content:center}
     .big-play{width:46px;height:46px;border-radius:12px;border:0;background:linear-gradient(90deg,var(--accent1),var(--accent2));color:#fff;font-size:20px}
     .skip-btn{padding:8px 10px;border-radius:10px;border:0;background:transparent;cursor:pointer;font-weight:600;color:var(--muted)}
+    .onoff-btn{width:40px;height:36px;border-radius:10px;border:0;background:transparent;cursor:pointer;font-weight:700;color:var(--muted);font-size:16px}
 
+    /* progress (will be below controls) */
     .progress-wrap{width:100%;display:flex;gap:8px;align-items:center;padding:6px 0 0}
     .time{font-size:12px;color:var(--muted);min-width:36px;text-align:center}
     .progress{flex:1;height:6px;background:rgba(0,0,0,0.06);border-radius:999px;position:relative;overflow:hidden}
@@ -56,10 +80,22 @@
     .vol{width:110px;display:flex;gap:6px;align-items:center}
     .small{font-size:13px;color:var(--muted)}
 
+    /* small screen: stack vertically and keep controls at top, progress below and meta at bottom */
     @media (max-width:640px){
       .wrap{padding-bottom:160px}
-      .mini-player{left:12px;transform:none;width:calc(100% - 24px);border-radius:12px;padding:10px}
-      .progress-wrap{display:none}
+      .mini-player{
+        left:12px;
+        transform:none;
+        width:calc(100% - 24px);
+        border-radius:12px;
+        padding:12px;
+        flex-direction:column;
+        align-items:stretch;
+      }
+      .mini-controls-wrap{order:0}
+      .progress-wrap{order:1; margin-top:6px}
+      .mini-left { order:2; margin-top:6px; justify-content:flex-start }
+      .progress-wrap{display:flex}
       .dur{display:none}
     }
   </style>
@@ -85,7 +121,6 @@
             <div class="title">{{ song }}</div>
             <div class="sub">
               <span class="subtext">Uploaded • {{ loop.index }}</span>
-              <!-- duration placeholder, will be filled by JS (id must match loop.index0) -->
               <span class="dur" aria-live="polite" id="dur-{{ loop.index0 }}">—</span>
             </div>
           </div>
@@ -100,8 +135,33 @@
     </section>
   </div>
 
-  <!-- Mini player -->
-  <div class="mini-player" id="miniPlayer">
+  <!-- Mini player: controls first, progress second, name/meta last -->
+  <div class="mini-player" id="miniPlayer" role="region" aria-label="Mini audio player">
+    <div class="mini-controls-wrap">
+      <div class="mini-controls">
+        <button class="skip-btn" data-seek="-10" title="Skip -10s">-10s</button>
+        <button class="skip-btn" data-seek="-5" title="Skip -5s">-5s</button>
+
+        <button id="prev" class="icon-btn" title="Previous">⟨</button>
+        <button id="playPause" class="big-play" title="Play/Pause">▶</button>
+        <button id="next" class="icon-btn" title="Next">⟩</button>
+
+        <button class="skip-btn" data-seek="5" title="Skip +5s">+5s</button>
+        <button class="skip-btn" data-seek="10" title="Skip +10s">+10s</button>
+
+        <!-- On/Off (mute/unmute) -->
+        <button id="onOff" class="onoff-btn" title="Mute/Unmute">🔊</button>
+      </div>
+
+      <!-- progress sits below controls -->
+      <div class="progress-wrap" id="progressWrap" aria-hidden="false">
+        <div class="time" id="curTime">0:00</div>
+        <div class="progress" id="progress"><i></i></div>
+        <div class="time" id="durTime">0:00</div>
+      </div>
+    </div>
+
+    <!-- track meta (thumb + title) shown below on mobile, right side on desktop -->
     <div class="mini-left">
       <div class="mini-thumb" id="miniThumb">♪</div>
       <div class="mini-meta">
@@ -110,25 +170,7 @@
       </div>
     </div>
 
-    <div class="mini-controls">
-      <button class="skip-btn" data-seek="-10" title="Skip -10s">-10s</button>
-      <button class="skip-btn" data-seek="-5" title="Skip -5s">-5s</button>
-      <button id="prev" class="icon-btn" title="Previous">⟨</button>
-      <button id="playPause" class="big-play" title="Play/Pause">▶</button>
-      <button id="next" class="icon-btn" title="Next">⟩</button>
-      <button class="skip-btn" data-seek="5" title="Skip +5s">+5s</button>
-      <button class="skip-btn" data-seek="10" title="Skip +10s">+10s</button>
-    </div>
-
-    <div style="width:12px"></div>
-
-    <div class="progress-wrap" aria-hidden="true">
-      <div class="time" id="curTime">0:00</div>
-      <div class="progress" id="progress"><i></i></div>
-      <div class="time" id="durTime">0:00</div>
-    </div>
-
-    <div class="vol" aria-hidden="true" style="margin-left:10px">
+    <div class="vol" aria-hidden="true" style="margin-left:8px">
       <div class="small">🔊</div>
       <input id="vol" type="range" min="0" max="1" step="0.01" value="0.9">
     </div>
@@ -154,6 +196,7 @@
       const vol = document.getElementById('vol');
       const shuffleBtn = document.getElementById('shuffleBtn');
       const skipBtns = Array.from(document.querySelectorAll('.skip-btn'));
+      const onOff = document.getElementById('onOff');
 
       if (!player) { console.error('Audio element #player missing'); return; }
 
@@ -169,7 +212,70 @@
         return `${m}:${sec}`;
       };
 
-      // load durations (metadata) for each track
+      /* Robust duration loader (mobile-friendly) */
+      async function getDurationRobust(src, timeout = 2500) {
+        return new Promise((resolve) => {
+          let finished = false;
+          function finish(value) {
+            if (finished) return;
+            finished = true;
+            resolve(value);
+          }
+
+          try {
+            const a = document.createElement('audio');
+            a.preload = 'metadata';
+            a.src = src;
+            a.style.display = 'none';
+            a.setAttribute('playsinline', '');
+            document.body.appendChild(a);
+
+            const onLoaded = () => {
+              const dur = a.duration;
+              a.removeEventListener('loadedmetadata', onLoaded);
+              a.removeEventListener('error', onError);
+              if (a.parentNode) a.parentNode.removeChild(a);
+              finish(isFinite(dur) ? dur : null);
+            };
+            const onError = () => {
+              a.removeEventListener('loadedmetadata', onLoaded);
+              a.removeEventListener('error', onError);
+              if (a.parentNode) a.parentNode.removeChild(a);
+              finish(null);
+            };
+
+            a.addEventListener('loadedmetadata', onLoaded, { once: true });
+            a.addEventListener('error', onError, { once: true });
+
+            setTimeout(async () => {
+              if (finished) return;
+              try { if (a.parentNode) a.parentNode.removeChild(a); } catch (e) {}
+              try {
+                const resp = await fetch(src);
+                if (!resp.ok) { finish(null); return; }
+                const arrayBuffer = await resp.arrayBuffer();
+                const AC = window.AudioContext || window.webkitAudioContext;
+                if (!AC) { finish(null); return; }
+                const ctx = new AC();
+                ctx.decodeAudioData(arrayBuffer).then((audioBuffer) => {
+                  const dur = audioBuffer.duration;
+                  try { ctx.close && ctx.close(); } catch (e) {}
+                  finish(isFinite(dur) ? dur : null);
+                }).catch(() => {
+                  try { ctx.close && ctx.close(); } catch (e) {}
+                  finish(null);
+                });
+              } catch {
+                finish(null);
+              }
+            }, timeout);
+          } catch {
+            finish(null);
+          }
+        });
+      }
+
+      // populate durations
       tracks.forEach((t, i) => {
         const src = t.dataset.src;
         const durEl = document.getElementById('dur-' + i);
@@ -177,21 +283,9 @@
           if (durEl) durEl.textContent = '—';
           return;
         }
-        try {
-          const a = new Audio();
-          a.preload = 'metadata';
-          a.src = src;
-          a.addEventListener('loadedmetadata', () => {
-            if (durEl) durEl.textContent = secToStr(a.duration);
-            a.src = '';
-          }, { once: true });
-          a.addEventListener('error', () => {
-            if (durEl) durEl.textContent = '—';
-          }, { once: true });
-        } catch (err) {
-          if (durEl) durEl.textContent = '—';
-          console.warn('metadata load failed for', src, err);
-        }
+        getDurationRobust(src, 2500).then(d => {
+          if (durEl) durEl.textContent = d ? secToStr(d) : '—';
+        });
       });
 
       function highlightTrack(i) {
@@ -232,7 +326,7 @@
         if (playPause) playPause.textContent = playing ? '⏸' : '▶';
       }
 
-      // attach handlers
+      // attach handlers to tracks
       tracks.forEach((t, i) => {
         t.addEventListener('click', () => setTrack(i));
         t.addEventListener('keydown', e => { if (e.key === 'Enter' || e.key === ' ') setTrack(i); });
@@ -248,12 +342,23 @@
         }
       });
 
+      // prev/next
       if (prevBtn) prevBtn.addEventListener('click', () => { index = (index - 1 + order.length) % order.length; setTrack(index); });
       if (nextBtn) nextBtn.addEventListener('click', () => { index = (index + 1) % order.length; setTrack(index); });
+
+      // play/pause
       if (playPause) playPause.addEventListener('click', () => {
         if (!player.src) { setTrack(0); return; }
         if (player.paused) player.play(); else player.pause();
       });
+
+      // on/off mute button
+      if (onOff) {
+        onOff.addEventListener('click', () => {
+          player.muted = !player.muted;
+          onOff.textContent = player.muted ? '🔇' : '🔊';
+        });
+      }
 
       player.addEventListener('play', () => updatePlayButton(true));
       player.addEventListener('pause', () => updatePlayButton(false));
@@ -268,6 +373,7 @@
 
       player.addEventListener('ended', () => { index = (index + 1) % order.length; setTrack(index); });
 
+      // progress seek
       if (progress) progress.addEventListener('click', (e) => {
         const rect = progress.getBoundingClientRect();
         const x = e.clientX - rect.left;
@@ -275,8 +381,10 @@
         player.currentTime = pct * (player.duration || 1);
       });
 
+      // volume
       if (vol) { vol.addEventListener('input', (e) => { player.volume = e.target.value; }); player.volume = vol.value || 0.9; }
 
+      // shuffle
       if (shuffleBtn) shuffleBtn.addEventListener('click', () => {
         shuffle = !shuffle;
         shuffleBtn.style.border = shuffle ? '1px solid rgba(255,20,147,0.18)' : '1px solid rgba(0,0,0,0.04)';
@@ -284,6 +392,7 @@
         order = shuffle ? shuffleArray(tracks.map((_, i) => i)) : tracks.map((_, i) => i);
       });
 
+      // skip buttons
       skipBtns.forEach(b => {
         b.addEventListener('click', () => {
           const sec = Number(b.getAttribute('data-seek') || 0);
@@ -293,6 +402,7 @@
         });
       });
 
+      // keyboard shortcuts
       document.addEventListener('keydown', e => {
         if (e.code === 'Space' && document.activeElement.tagName !== 'INPUT') { e.preventDefault(); if (player.paused) player.play(); else player.pause(); }
         if (e.key === 'ArrowRight') if (nextBtn) nextBtn.click();
